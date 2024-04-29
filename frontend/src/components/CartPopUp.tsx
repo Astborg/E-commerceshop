@@ -5,6 +5,7 @@ const CartPopOut = ({ products, setProducts }: { products: any, setProducts:any 
     console.log("Products received by CartPopOut:", products); 
     const totalAmount = products.reduce((acc: any, product: any) => acc + product.price * product.antal, 0);
     const [adress, setAdress] = useState({
+      Email: "",
       ForName: "",
       LastName: "",
       Street: "",
@@ -68,6 +69,10 @@ const CartPopOut = ({ products, setProducts }: { products: any, setProducts:any 
           ))}
         </ul>
         <p>Totalt: {totalAmount}</p>
+        <label>
+            Email:</label>
+        <input type="text" name="Email" value={adress.Email} onChange={(event) => handleChange(event)} />
+        
         <label>
             ForName:</label>
         <input type="text" name="ForName" value={adress.ForName} onChange={(event) => handleChange(event)} />

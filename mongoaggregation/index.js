@@ -20,7 +20,13 @@ app.get('/', async (request, response) => {
     response.json(orders)
 
 })
+app.get("/orders", async (request, response) => {
+    
+    let orders = await DatabaseConnection.getInstance().getAllOrders();
+    response.json(orders);
 
+    }
+);
 app.get('/products', async (request, response) => {
     try {
         const products = await DatabaseConnection.getInstance().getAllProducts();
@@ -43,8 +49,7 @@ app.post("/create-order", async (request, response) => {
     
     const {lineItems} = request.body
     const {customer} = request.body
-    let orderId = await DatabaseConnection.getInstance().saveOrder(request.body.lineItems)
-    // let customerId = await DatabaseConnection.getInstance().saveOrder(request.body.customer)
+    let orderId = await DatabaseConnection.getInstance().saveOrder(request.body.lineItems, request.body.customer)
     console.log('OrderId', orderId, lineItems, customer)
     response.json({"id": orderId, 'customer': customer});
 

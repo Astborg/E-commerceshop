@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 
 export default function Admin() {
     const [products, setProducts] = useState([]);
+    const [ordersData, setOrdersData] = useState([])
     const [showUpdateForm, setShowUpdateForm] = useState(false);
+    const [showOrders, setShowOrders] = useState(false)
     const [selectedProduct, setSelectedProduct] = useState({
         _id: "",
         name: "",
@@ -39,6 +41,20 @@ export default function Admin() {
         fetchProducts();
     }, [])
 
+    useEffect(() => {
+    async function fetchOrders() {
+        try {
+            const response = await fetch('http://localhost:3000/orders');
+            const data = await response.json();
+            console.log(data)
+            setOrdersData(data);
+        } catch (error) {
+            console.error('Error fetching orders:', error);
+        }
+    }
+
+    fetchOrders()
+}, [])
     async function updateProduct(event:any) {
         event.preventDefault()
         try {
@@ -102,6 +118,8 @@ export default function Admin() {
         setSelectedProduct(product);
         setShowUpdateForm(true);
     }
+
+   
   return (
     <>
     <div>Products</div>
@@ -173,10 +191,53 @@ export default function Admin() {
             <button onClick={() => showUpdate(product)}>Update</button>
         </div>
     ))}
-       
+      
+        <p>Orders</p>
+        {ordersData.map((order:any) => (
+            <div key={order.id}>
+                <p>Customer:</p>
+                <ul>
+                    {order.customer.map((customer:any, index:number)=> (
+                        <li key={index}>
+                            <p>Email: {customer.Email}</p>
+                            <p>Forname: {customer.ForName}</p>
+                            <p>Lastname: {customer.LastName}</p>
+                            <p>Street: {customer.Street}</p>
+                            <p>StreetNumber: {customer.StreetNumber}</p>
+                            <p>Postcode: {customer.Postcode}</p>
+                            <p>City: {customer.City}</p>
+                            <p>Password: {customer.Password}</p>
+                        </li>
+                    ))}
+                </ul>
+                <p>Products:</p>
+                <ul>
+                    {order.lineItems.map((item:any, index:number)=> (
+                        <li key={index}>
+                            <p>id: {item._id}</p>
+                            <p>name: {item.name}</p>
+                            <p>amount: {item.antal}</p>
+                            <p>categoryId: {item.category}</p>
+                            <p>details: {item.details}</p>
+                            <p>price: {item.price}</p>
+                            <p>status: {item.status}</p>
+                            <p>stock:{item.stock}</p>
+                            
+                        </li>
+                    ))}
+                </ul>
+                <p>orderDate: {order.orderDate}</p>
+                <p>status: {order.status}</p>
+                <p>totalPrice: {order.totalPrice}</p>
+                <p>order_id: {order._id}</p>
+            </div>
+        ))}
+        
+        </>
+       )}
 
 
 
-    </>
-  )
-}
+   
+  
+

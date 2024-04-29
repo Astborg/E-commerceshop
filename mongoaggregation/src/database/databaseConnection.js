@@ -107,74 +107,9 @@ class DatabaseConnection{
         let db = this.client.db('shop')
         let collection = db.collection('orders')
 
-        let pipeline = [
-            {
-            $lookup: {
-                from: "lineItems",
-                localField: "orderId",
-                foreignField: "id",
-                as: "lineItems",
-                pipeline: [
-                {
-                    $lookup: {
-                    from: "products",
-                    localField: "id",
-                    foreignField: "product",
-                    as: "linkedProduct",
-                    },
-                },
-                {
-                    $addFields: {
-                    linkedProduct: {
-                        $first: "$linkedProduct",
-                    },
-                    },
-                },
-                ],
-            },
-            },
-            {
-            $lookup:
-                /**
-                 * from: The target collection.
-                 * localField: The local join field.
-                 * foreignField: The target join field.
-                 * as: The name for the results.
-                 * pipeline: Optional pipeline to run on the foreign collection.
-                 * let: Optional variables to use in the pipeline field stages.
-                 */
-                {
-                from: "customers",
-                localField: "id",
-                foreignField: "customer",
-                as: "linkedCustomer",
-                },
-            },
-            {
-            $addFields:
-                /**
-                 * newField: The new field name.
-                 * expression: The new field expression.
-                 */
-                {
-                linkedCustomer: {
-                    $first: "$linkedCustomer",
-                },
-                calculatedTotal: {
-                    $sum: "$lineItems.totalPrice",
-                },
-                },
-            },
-        ]
-
-        let aggregate = collection.aggregate(pipeline)
-
-        let orders = []
-
-        for await (let document of aggregate){
-            orders.push(document)
-        }
-        return orders
+        const orders = await collection.find({}).toArray();
+            
+        return orders;
     }
 
     async getOrCreateCustomer(email, name, address){
